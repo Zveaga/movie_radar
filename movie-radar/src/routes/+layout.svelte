@@ -32,6 +32,8 @@
         display: flex;
         align-items: center;
         padding: 1rem 0;
+		max-width: 900px;
+	    margin: 0 auto;
     }
     nav ul {
         list-style: none;
@@ -54,4 +56,7 @@
         display: flex;
         gap: 0.5rem;
     }
+	nav form input[type="text"] {
+   		width: 250px;
+	}
 </style>
