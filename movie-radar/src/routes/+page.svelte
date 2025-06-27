@@ -6,7 +6,7 @@
 <main>
 	
 	<h1>Movie Radar</h1>
-	<p>Discover and track your favourite movies!</p>
+	<p>placeholder for latest releases</p>
 </main>
 
 
