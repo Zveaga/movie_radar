@@ -2,9 +2,13 @@
 	import '$lib/app.css';
 
 	let searchQuery = '';
+	let searchResults = null;
 
-	const handleSearch = (event) => {
+	const handleSearch = async (event) => {
 		console.log('Searching for:', searchQuery);
+		const res = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
+		searchResults = await res.json();
+		console.log('Results:', searchResults);
 	}
 </script>
 
