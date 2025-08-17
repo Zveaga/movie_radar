@@ -1,3 +1,4 @@
+import { RAPIDAPI_KEY } from "$env/static/private";
 import type { RequestHandler } from "@sveltejs/kit";
 
 export const GET: RequestHandler = async ({ url }) => {
@@ -5,7 +6,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	const options = {
 		method: 'GET',
 		headers: {
-			'x-rapidapi-key': '',
+			'x-rapidapi-key': RAPIDAPI_KEY,
 			'x-rapidapi-host': 'streaming-availability.p.rapidapi.com'
 		}
 	};
@@ -14,7 +15,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		return new Response(JSON.stringify({ error: 'Missing querry'}), {status: 400 });
 	}
 
-    const apiUrl = `https://streaming-availability.p.rapidapi.com/shows/search/title?title=${encodeURIComponent(query)}&country=NL&series_granularity=show&show_type=movie&output_language=en`;
+    const apiUrl = `https://streaming-availability.p.rapidapi.com/shows/search/title?title=${encodeURIComponent(query)}&country=NL&series_granularity=show&output_language=en`;
 	
 	const res = await fetch(apiUrl, options);
 	const data = await res.json();
