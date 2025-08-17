@@ -20,7 +20,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	const res = await fetch(apiUrl, options);
 	const data = await res.json();
 	// const data = await res.text();
-	console.log('API Response:', data);
+	// console.log('API Response:', data);
 
 	return new Response(JSON.stringify(data), {
         headers: { 'Content-Type': 'application/json' }

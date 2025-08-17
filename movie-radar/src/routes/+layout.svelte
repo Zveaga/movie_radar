@@ -11,6 +11,7 @@
 		searchResults = await res.json();
 		console.log('Results:', searchResults);
 	}
+
 </script>
 
 <nav>
@@ -20,14 +21,25 @@
         <li><a href="/recommendations">Recommendations</a></li>
         <li><a href="/history">Watched Movies</a></li>
     </ul>
-	<form on:submit|preventDefault={handleSearch}>
+
+	<!-- <form on:submit|preventDefault={handleSearch}>
 		<input
 			type="text"
 			placeholder="Search movie"
 			bind:value={searchQuery}
 		/>
 		<button type="submit">Search</button>
-	</form>
+	</form> -->
+
+	<form method="GET" action="/search">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search movie"
+            bind:value={searchQuery}
+        />
+        <button type="submit">Search</button>
+    </form>
 </nav>
 
 <slot />
