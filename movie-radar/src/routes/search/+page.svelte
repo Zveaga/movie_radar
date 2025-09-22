@@ -16,7 +16,7 @@
     //     } else {
     //         searchResults = [];
     //     }
-    // });
+    // }); 
 
 	$: if (browser && query) {
         fetchResults(query);
