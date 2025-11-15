@@ -52,5 +52,27 @@
     }
 	nav form input[type="text"] {
    		width: 250px;
+        padding: 0.4rem 0.5rem;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
 	}
+    nav form input[type="text"]:focus {
+        outline: none;
+        border-color: #0070f3;
+    }
+    nav form button {
+        padding: 0.4rem 1rem;
+        background: #0070f3;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    nav form button:hover {
+        background: #0051cc;
+    }
 </style>

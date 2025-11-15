@@ -20,14 +20,6 @@
 
 	$: query = $page.url.searchParams.get('q') ?? '';
 
-	// onMount(() => {
-    //     if (query) {
-    //         fetchResults(query);
-    //     } else {
-    //         searchResults = [];
-    //     }
-    // }); 
-
 	$: if (browser && query) {
         fetchResults(query);
     } else if (browser && !query) {
@@ -45,7 +37,7 @@
 </script>
 
 
-<h1>Search Results for "{query}""</h1>
+<h1>Search Results for "{query}"</h1>
 
 {#if loading}
 	<p>Loading...</p>
