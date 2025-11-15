@@ -1,4 +1,4 @@
-/* :root {
+:root {
     --color-primary: #0070f3;
     --color-background: #f9f9f9;
     --color-surface: #fff;
@@ -6,23 +6,23 @@
     --border-radius: 8px;
     --box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     --font-family: system-ui, sans-serif;
-} */
+}
 
-/* body {
+body {
     background: var(--color-background);
     color: var(--color-text);
     font-family: var(--font-family);
     margin: 0;
     padding: 0;
-} */
+}
 
 main {
         max-width: 600px;
         margin: 2rem auto;
         padding: 2rem;
-        background: #f9f9f9;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        background: var(--color-surface);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
         text-align: center;
 }
 
