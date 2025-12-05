@@ -84,6 +84,7 @@ h2 {
     margin: 0 0 0.5rem 0;
     font-size: 1.3rem;
     color: #0070f3;
+    text-align: left;
 }
 .year {
     font-size: 0.95rem;
@@ -112,6 +113,7 @@ h2 {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid #e0e0e0;
+    text-align: left;
 }
 .services {
     display: flex;
