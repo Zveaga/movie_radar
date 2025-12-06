@@ -1,33 +1,160 @@
 <script lang="ts">
-    export let movie;
+    interface MovieData {
+        title: string;
+        imdbId?: string;
+        imdb_id?: string;
+        poster_url?: string;
+        imageSet?: {
+            verticalPoster?: {
+                w480?: string;
+                w360?: string;
+            };
+        };
+        streamingOptions?: Record<string, any[]>;
+    }
+
+    export let movie: MovieData;
+    export let isWatched: boolean = false;
+    export let isFavorite: boolean = false;
+    export let onWatchedToggle: ((isWatched: boolean) => void) | null = null;
+    export let onFavoriteToggle: ((isFavorite: boolean) => void) | null = null;
+    export let showWatchedButton: boolean = true;
+    export let showFavoriteButton: boolean = true;
+
+    let addingWatched = false;
+    let addingFavorite = false;
+    let error: string | null = null;
+
+    // Extract imdb_id or generate one from title
+    $: imdb_id = movie.imdbId || movie.imdb_id || `title_${movie.title?.replace(/\s+/g, '_')}`;
+    $: posterUrl = movie.poster_url ?? movie.imageSet?.verticalPoster?.w480 ?? movie.imageSet?.verticalPoster?.w360 ?? '';
+
+    async function toggleWatched() {
+        if (!onWatchedToggle) return;
+        
+        addingWatched = true;
+        error = null;
+
+        try {
+            if (isWatched) {
+                // Remove from watched
+                const res = await fetch('/api/movies/watched', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imdb_id })
+                });
+                if (!res.ok) throw new Error('Failed to remove from watched');
+                onWatchedToggle(false);
+            } else {
+                // Add to watched
+                const res = await fetch('/api/movies/watched', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imdb_id, title: movie.title, poster_url: posterUrl })
+                });
+                if (!res.ok) throw new Error('Failed to add to watched');
+                onWatchedToggle(true);
+            }
+        } catch (err) {
+            error = err instanceof Error ? err.message : 'An error occurred';
+            console.error('Error toggling watched:', err);
+        } finally {
+            addingWatched = false;
+        }
+    }
+
+    async function toggleFavorite() {
+        if (!onFavoriteToggle) return;
+
+        addingFavorite = true;
+        error = null;
+
+        try {
+            if (isFavorite) {
+                // Remove from favorites
+                const res = await fetch('/api/movies/favorites', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imdb_id })
+                });
+                if (!res.ok) throw new Error('Failed to remove from favorites');
+                onFavoriteToggle(false);
+            } else {
+                // Add to favorites
+                const res = await fetch('/api/movies/favorites', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imdb_id, title: movie.title, poster_url: posterUrl })
+                });
+                if (!res.ok) throw new Error('Failed to add to favorites');
+                onFavoriteToggle(true);
+            }
+        } catch (err) {
+            error = err instanceof Error ? err.message : 'An error occurred';
+            console.error('Error toggling favorite:', err);
+        } finally {
+            addingFavorite = false;
+        }
+    }
 </script>
 
 <div class="movie-card">
     <img
         class="poster"
-		src={
-		    movie.imageSet?.verticalPoster?.w480
-		    ?? movie.imageSet?.verticalPoster?.w360
-		    ?? ''
-		}   
+		src={posterUrl}
     	alt={movie.title}
         loading="lazy"
     />
     <div class="info">
         <h2>{movie.title}</h2>
-        <!-- <span class="year">{movie.releaseYear}</span> -->
-        <!-- <div class="genres">
-            {#each movie.genres as genre}
-                <span class="genre">{genre.name}</span>
-            {/each}
-        </div> -->
-        <!-- <div>
-            <strong>Directors:</strong> {movie.directors?.join(', ') ?? 'N/A'}
+        
+        {#if error}
+            <div class="error-message">{error}</div>
+        {/if}
+
+        <div class="actions">
+            {#if onWatchedToggle && showWatchedButton}
+                <button
+                    on:click={toggleWatched}
+                    disabled={addingWatched}
+                    class="action-btn watched-btn"
+                    class:active={isWatched}
+                    title={isWatched ? 'Remove from watched' : 'Add to watched'}
+                >
+                    {#if addingWatched}
+                        <span class="spinner"></span>
+                    {:else if isWatched}
+                        <span class="icon">✓</span>
+                        <span class="label">Watched</span>
+                        <span class="remove-icon">✕</span>
+                    {:else}
+                        <span class="icon">👁</span>
+                        <span class="label">Add to Watched</span>
+                    {/if}
+                </button>
+            {/if}
+            
+            {#if onFavoriteToggle && showFavoriteButton}
+                <button
+                    on:click={toggleFavorite}
+                    disabled={addingFavorite}
+                    class="action-btn favorite-btn"
+                    class:active={isFavorite}
+                    title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                    {#if addingFavorite}
+                        <span class="spinner"></span>
+                    {:else if isFavorite}
+                        <span class="icon">★</span>
+                        <span class="label">Favorited</span>
+                        <span class="remove-icon">✕</span>
+                    {:else}
+                        <span class="icon">☆</span>
+                        <span class="label">Add to Favorites</span>
+                    {/if}
+                </button>
+            {/if}
         </div>
-        <div>
-            <strong>Cast:</strong> {movie.cast.slice(0, 5).join(', ')}{movie.cast.length > 5 ? '...' : ''}
-        </div> -->
-        <!-- <div class="overview">{movie.overview}</div> -->
         
         {#if movie.streamingOptions?.nl && movie.streamingOptions.nl.length > 0}
             <div class="streaming-options">
@@ -86,29 +213,107 @@ h2 {
     color: #0070f3;
     text-align: left;
 }
-.year {
-    font-size: 0.95rem;
-    color: #666;
-    margin-bottom: 0.5rem;
-    display: block;
-}
-.genres {
-    margin-bottom: 0.5rem;
-}
-.genre {
-    background: #e0e7ff;
-    color: #3730a3;
+
+.error-message {
+    background: #fee;
+    color: #c00;
+    padding: 0.5rem;
     border-radius: 6px;
-    padding: 0.2rem 0.6rem;
-    margin-right: 0.4rem;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid #c00;
+}
+
+.actions {
+    display: flex;
+    gap: 0.75rem;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.action-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.action-btn.active {
+    border-color: currentColor;
+    background: rgba(0,0,0,0.05);
+}
+
+.watched-btn {
+    color: #0070f3;
+    border-color: #0070f3;
+}
+
+.watched-btn.active {
+    background: #e7f2ff;
+    border-color: #0070f3;
+}
+
+.favorite-btn {
+    color: #f59e0b;
+    border-color: #f59e0b;
+}
+
+.favorite-btn.active {
+    background: #fffbf0;
+    border-color: #f59e0b;
+}
+
+.action-btn .icon {
+    font-size: 1.1rem;
+}
+
+.action-btn .remove-icon {
+    margin-left: auto;
+    font-size: 0.8rem;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.action-btn:hover .remove-icon {
+    opacity: 1;
+}
+
+.spinner {
     display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0,0,0,0.1);
+    border-radius: 50%;
+    border-top-color: currentColor;
+    animation: spin 0.8s linear infinite;
 }
-.overview {
-    color: #444;
-    font-size: 1rem;
-    margin-top: 0.5rem;
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
+
+.label {
+    font-size: 0.9rem;
+}
+
 .streaming-options {
     margin-top: 1rem;
     padding-top: 1rem;

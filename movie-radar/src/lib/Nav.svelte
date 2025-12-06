@@ -1,9 +1,9 @@
 <nav>
     <ul>
         <li><a href="/">Home</a></li>
+        <li><a href="/watched">My Movies</a></li>
         <li><a href="/dashboard">Dashboard</a></li>
         <li><a href="/recommendations">Recommendations</a></li>
-        <li><a href="/history">Watched Movies</a></li>
     </ul>
 </nav>
 
